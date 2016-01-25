@@ -21,7 +21,7 @@ var headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36'
 };
 
-var baseUrl = 'http://www.xiami.com/space/lib-song/u/50428430/page/';
+var baseUrl = 'http://www.xiami.com/space/lib-song/u/3592811/page/';
 
 for(let i=0; i<1000000; i++) {
   var url = baseUrl + (i+1);

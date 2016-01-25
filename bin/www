@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('pachong:server');
+var debug = require('debug')('xiamispider');
 var http = require('http');
 
 /**
