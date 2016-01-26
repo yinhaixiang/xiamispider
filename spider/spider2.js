@@ -4,10 +4,6 @@ var cheerio = require('cheerio');
 var async = require('async');
 var XMLWriter = require('xml-writer');
 var fs = require('fs');
-var xw = new XMLWriter();
-
-var songlist = [];
-var urls = [];
 
 var headers = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -18,73 +14,32 @@ var headers = {
   'Host': 'www.xiami.com',
   'Pragma': 'no-cache',
   'Upgrade-Insecure-Requests': '1',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36'
+  'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36',
 };
 
-var baseUrl = 'http://www.xiami.com/space/lib-song/u/3592811/page/';
-
-for(let i=0; i<1000000; i++) {
-  var url = baseUrl + (i+1);
-  urls.push(url);
-}
-
-async.eachSeries(urls, function(url, cb) {
-  request.get({url: url, headers: headers}, function (err, res, body) {
+exports.getList = function (link, cb) {
+  request.get({url: link, headers: headers}, function(err, res, body) {
+    console.log(body);
     var $ = cheerio.load(body, {decodeEntities: false});
-    var songListSoup = $('table.track_list').find('tr');
-    if (songListSoup.length > 0) {
-      console.log('has songs:', url);
-      for (let i = 0; i < songListSoup.length; i++) {
-        var songInfo = $(songListSoup[i]).find('td.song_name a');
-        var songName = $(songInfo[0]).text();
-        var artistName = '';
-        for (let i = 1; i < songInfo.length; i++) {
-          if ($(songInfo[i]).hasClass('artist_name')) {
-            artistName = $(songInfo[i]).text();
-            break;
-          }
-        }
-        songlist.push(artistName + ' - ' + songName + '.mp3');
-      }
-    } else{
-      return cb('over');
+    var collectionName = $('.info_collect_main h2').text();
+    var pattern = /(www.xiami.com\/collect\/)(\d+)(\?.+)/;
+    var result = link.match(pattern);
+    var newUrl = 'http://www.xiami.com/collect/ajax-get-list?id=' + result[2];
+
+    for(var i=1; i<100; i++) {
+
     }
 
-    cb();
+    console.log(newUrl);
+    request.get({url: newUrl, headers: headers}, function(err, res, body) {
+      if(err) throw err;
+      var result = JSON.parse(body);
+      if(result && result['result'] && result['result']['data']) {
+        var data = result['result']['data'];
+        console.log(data.length);
+      }
+      cb(body);
+    });
   });
-
-}, function() {
-  console.log('ok...');
-  xw.startDocument();
-  xw.startElement('List').writeAttribute('ListName', '虾米红心');
-  for(var song of songlist) {
-    xw.startElement('File');
-    xw.writeElement('FileName', song);
-    xw.endElement();
-  }
-  xw.endElement();
-  xw.endDocument();
-  fs.writeFileSync('../public/temp/' + new Date().getTime() + Math.floor(Math.random()*1000) + '.kgl', xw);
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 

@@ -4,7 +4,6 @@ var cheerio = require('cheerio');
 var async = require('async');
 var XMLWriter = require('xml-writer');
 var fs = require('fs');
-var httpUtil = require('../util/httpUtil');
 
 var headers = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -66,7 +65,6 @@ exports.getList = function (link, cb) {
     xw.endElement();
     xw.endDocument();
     var result = xw.toString();
-    //result = httpUtil.html();
     cb(result);
   });
 };
