@@ -24,7 +24,7 @@ exports.getList = function (link, cb) {
   var tempArr = link.split('?');
   var baseUrl = tempArr[0] + '/page/';
 
-  for (let i = 0; i < 50000000; i++) {
+  for (let i = 0; i < 10000; i++) {
     var url = baseUrl + (i + 1);
     urls.push(url);
   }
