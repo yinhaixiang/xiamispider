@@ -16,12 +16,6 @@ var headers = {
   'Pragma': 'no-cache',
   'Upgrade-Insecure-Requests': '1',
   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36',
-  'X-Real-IP': '47.88.25.203',
-  'X-Forwarded-For': '47.88.25.203',
-  'Proxy-Client-IP': '47.88.25.203',
-  'WL-Proxy-Client-IP': '47.88.25.203',
-  'HTTP_CLIENT_IP': '47.88.25.203',
-  'HTTP_X_FORWARDED_FOR': '47.88.25.203'
 };
 
 exports.getList = function (link, cb) {
@@ -30,7 +24,7 @@ exports.getList = function (link, cb) {
   var tempArr = link.split('?');
   var baseUrl = tempArr[0] + '/page/';
 
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 5; i++) {
     var url = baseUrl + (i + 1);
     urls.push(url);
   }
