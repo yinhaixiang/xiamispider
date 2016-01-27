@@ -23,8 +23,8 @@ exports.getList = function (link, cb) {
   var tempArr = link.split('?');
   var baseUrl = tempArr[0] + '/page/';
 
-  for (let i = 0; i < 10000; i++) {
-    var url = baseUrl + (i + 1);
+  for (let i = 1; i < 10000; i++) {
+    var url = baseUrl + i;
     urls.push(url);
   }
 
