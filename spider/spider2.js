@@ -18,28 +18,56 @@ var headers = {
 };
 
 exports.getList = function (link, cb) {
+  var songlist = [];
+  var dataUrls = [];
+
   request.get({url: link, headers: headers}, function(err, res, body) {
-    console.log(body);
     var $ = cheerio.load(body, {decodeEntities: false});
     var collectionName = $('.info_collect_main h2').text();
     var pattern = /(www.xiami.com\/collect\/)(\d+)(\?.+)/;
     var result = link.match(pattern);
-    var newUrl = 'http://www.xiami.com/collect/ajax-get-list?id=' + result[2];
-
     for(var i=1; i<100; i++) {
-
+      var dataUrl = 'http://www.xiami.com/collect/ajax-get-list?id=' + result[2];
+      dataUrl += '&p=' + i;
+      dataUrls.push(dataUrl);
     }
 
-    console.log(newUrl);
-    request.get({url: newUrl, headers: headers}, function(err, res, body) {
-      if(err) throw err;
-      var result = JSON.parse(body);
-      if(result && result['result'] && result['result']['data']) {
-        var data = result['result']['data'];
-        console.log(data.length);
+    async.eachSeries(dataUrls, function (url, cb) {
+      request.get({url: url, headers: headers}, function (err, res, body) {
+        if(err) throw err;
+        var result = JSON.parse(body);
+        if(result && result['result'] && result['result']['data']) {
+          var data = result['result']['data'];
+          if(data.length > 0) {
+            for(var songInfo of data) {
+              var songName = songInfo['name'];
+              var artistName = songInfo['artist_name'];
+              songlist.push(artistName + ' - ' + songName + '.mp3');
+            }
+          } else {
+            return cb('over');
+          }
+        }
+        cb();
+      });
+
+    }, function () {
+      console.log('ok...');
+      var xw = new XMLWriter();
+      xw.startDocument();
+      xw.startElement('List').writeAttribute('ListName', collectionName);
+      for (var song of songlist) {
+        xw.startElement('File');
+        xw.writeElement('FileName', song);
+        xw.endElement();
       }
-      cb(body);
+      xw.endElement();
+      xw.endDocument();
+      var result = xw.toString();
+      cb(result);
     });
+
+
   });
 };
 
