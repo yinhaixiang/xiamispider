@@ -3,6 +3,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var async = require('async');
 var XMLWriter = require('xml-writer');
+var xmlBeautifier = require('xml-beautifier');
 var fs = require('fs');
 
 var headers = {
@@ -39,10 +40,7 @@ exports.getList = function (link, cb) {
         if (result && result['result'] && result['result']['data']) {
           var data = result['result']['data'];
           if (data.length > 0) {
-            for (var songInfo of
-            data
-          )
-            {
+            for (var songInfo of data) {
               var songName = songInfo['name'];
               var artistName = songInfo['artist_name'];
               songlist.push(artistName + ' - ' + songName + '.mp3');
@@ -59,10 +57,7 @@ exports.getList = function (link, cb) {
       var xw = new XMLWriter();
       xw.startDocument();
       xw.startElement('List').writeAttribute('ListName', collectionName);
-      for (var song of
-      songlist
-      )
-      {
+      for (var song of songlist ) {
         xw.startElement('File');
         xw.writeElement('FileName', song);
         xw.endElement();
@@ -70,6 +65,7 @@ exports.getList = function (link, cb) {
       xw.endElement();
       xw.endDocument();
       var result = xw.toString();
+      result = xmlBeautifier(result);
       cb(result);
     });
 

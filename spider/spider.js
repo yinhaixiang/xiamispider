@@ -3,6 +3,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var async = require('async');
 var XMLWriter = require('xml-writer');
+var xmlBeautifier = require('xml-beautifier');
 var fs = require('fs');
 
 var headers = {
@@ -65,6 +66,7 @@ exports.getList = function (link, cb) {
     xw.endElement();
     xw.endDocument();
     var result = xw.toString();
+    result = xmlBeautifier(result);
     cb(result);
   });
 };
